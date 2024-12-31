@@ -117,3 +117,21 @@ async def get_messages():
     Debug endpoint showing the entire conversation history.
     """
     return {"conversation": conversation_messages}
+
+
+@app.get("/test-openai")
+async def test_openai():
+    try:
+        response = await openai.ChatCompletion.acreate(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": "Say hello!"}
+            ],
+            temperature=0.7
+        )
+        return {"response": response.choices[0].message.content}
+    except Exception as e:
+        logger.error("Error testing OpenAI API: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
