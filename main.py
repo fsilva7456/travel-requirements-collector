@@ -8,17 +8,16 @@ from supabase import create_client, Client
 app = FastAPI()
 
 # ---------------------------------------------------------
-# Environment Variables (set in Railway)
+# Environment Variables
 # ---------------------------------------------------------
-SUPABASE_URL = os.getenv("SUPABASE_URL")   # e.g., "https://xyzcompany.supabase.co"
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")   # anon or service role key
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")  # OpenAI API key
+SUPABASE_URL = os.getenv("SUPABASE_URL")  # Your Supabase URL
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")  # Your Supabase Key
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")  # OpenAI API Key
 
-# Validate that all required environment variables are set
 if not SUPABASE_URL or not SUPABASE_KEY or not OPENAI_API_KEY:
     raise Exception("Missing one or more required environment variables.")
 
-# Initialize OpenAI and Supabase clients
+# Initialize OpenAI and Supabase
 openai.api_key = OPENAI_API_KEY
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -52,23 +51,23 @@ async def chat_with_gpt(user_msg: UserMessage):
     # Add user message to conversation history
     conversation_messages.append({"role": "user", "content": user_msg.message})
 
-    # Call OpenAI's ChatCompletion endpoint
+    # Call OpenAI's Chat API
     try:
-        response = await openai.ChatCompletion.acreate(  # Using `acreate` for async
-            model="gpt-4",
+        response = await openai.ChatCompletion.acreate(
+            model="gpt-4",  # Replace with the model you're using
             messages=conversation_messages,
             temperature=0.7
         )
-        gpt_reply = response["choices"][0]["message"]["content"]
+        gpt_reply = response.choices[0].message.content
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
     # Add GPT reply to conversation
     conversation_messages.append({"role": "assistant", "content": gpt_reply})
 
-    # Check if GPT provided a final summary
+    # Check if GPT provided a summary
     if "Summary of your trip details" in gpt_reply:
-        # Attempt to parse the required details
+        # Attempt to parse required details (modify based on your parsing logic)
         num_travelers = None
         length_of_stay = None
         origin = None
@@ -117,7 +116,3 @@ async def get_messages():
     Debug endpoint showing entire conversation history.
     """
     return {"conversation": conversation_messages}
-
-@app.get("/")
-def health_check():
-    return {"status": "ok"}
