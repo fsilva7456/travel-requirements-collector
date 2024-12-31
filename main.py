@@ -55,7 +55,7 @@ async def chat_with_gpt(user_msg: UserMessage):
     # Call GPT-4 (or another model if needed)
     try:
         response = openai.ChatCompletion.acreate(
-            model="gpt-4",  # or e.g. "gpt-3.5-turbo"
+            model="gpt-4o",  # or e.g. "gpt-3.5-turbo"
             messages=conversation_messages,
             temperature=0.7
         )
