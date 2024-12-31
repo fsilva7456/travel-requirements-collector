@@ -117,3 +117,7 @@ async def get_messages():
     Debug endpoint showing entire conversation history.
     """
     return {"conversation": conversation_messages}
+
+@app.get("/")
+def health_check():
+    return {"status": "ok"}
