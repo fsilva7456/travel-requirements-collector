@@ -10,19 +10,20 @@ app = FastAPI()
 # ---------------------------------------------------------
 # Environment Variables
 # ---------------------------------------------------------
-SUPABASE_URL = os.getenv("SUPABASE_URL")  # Your Supabase URL
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")  # Your Supabase Key
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")  # OpenAI API Key
+SUPABASE_URL = os.getenv("SUPABASE_URL")  # Your Supabase project URL
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")  # Your Supabase service role or anon key
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")  # OpenAI API key
 
+# Validate environment variables
 if not SUPABASE_URL or not SUPABASE_KEY or not OPENAI_API_KEY:
     raise Exception("Missing one or more required environment variables.")
 
-# Initialize OpenAI and Supabase
+# Initialize Supabase and OpenAI clients
 openai.api_key = OPENAI_API_KEY
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # ---------------------------------------------------------
-# In-Memory Conversation Storage
+# Conversation Context
 # ---------------------------------------------------------
 conversation_messages: List[Dict[str, str]] = [
     {
@@ -46,15 +47,15 @@ class UserMessage(BaseModel):
 async def chat_with_gpt(user_msg: UserMessage):
     """
     User sends a message; GPT asks questions or acknowledges info.
-    Once GPT has all required details, we insert them into Supabase.
+    Once GPT has all required details, the system inserts it into Supabase.
     """
     # Add user message to conversation history
     conversation_messages.append({"role": "user", "content": user_msg.message})
 
-    # Call OpenAI's Chat API
+    # Call OpenAI's ChatCompletion endpoint
     try:
         response = await openai.ChatCompletion.acreate(
-            model="gpt-4",  # Replace with the model you're using
+            model="gpt-4",  # Replace with the correct model you're using
             messages=conversation_messages,
             temperature=0.7
         )
@@ -65,9 +66,9 @@ async def chat_with_gpt(user_msg: UserMessage):
     # Add GPT reply to conversation
     conversation_messages.append({"role": "assistant", "content": gpt_reply})
 
-    # Check if GPT provided a summary
+    # Check if GPT provided a final summary
     if "Summary of your trip details" in gpt_reply:
-        # Attempt to parse required details (modify based on your parsing logic)
+        # Attempt to parse details
         num_travelers = None
         length_of_stay = None
         origin = None
@@ -93,7 +94,7 @@ async def chat_with_gpt(user_msg: UserMessage):
                 if len(parts) > 1:
                     importance = parts[1].strip()
 
-        # If all fields are present, insert into Supabase
+        # Insert into Supabase if all fields are present
         if num_travelers and length_of_stay and origin and importance:
             try:
                 insert_response = supabase.table("TripRequests").insert({
@@ -113,6 +114,6 @@ async def chat_with_gpt(user_msg: UserMessage):
 @app.get("/messages")
 async def get_messages():
     """
-    Debug endpoint showing entire conversation history.
+    Debug endpoint showing the entire conversation history.
     """
     return {"conversation": conversation_messages}
