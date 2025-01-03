@@ -49,7 +49,7 @@ rides suitable for these ages, meal options, and any useful tips.
         response = client.Chat.Completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": system_content},
+                {"role": "developer", "content": system_content},
                 {"role": "user", "content": user_content},
             ],
             max_tokens=500,
