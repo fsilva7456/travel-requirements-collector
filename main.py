@@ -52,7 +52,7 @@ rides suitable for these ages, meal options, and any useful tips.
             temperature=0.7,
         )
         # Extract the assistant's reply
-        itinerary_text = response["choices"][0]["message"]["content"].strip()
+        itinerary_text = response.choices[0].message.content.strip()
         return ItineraryResponse(itinerary_text=itinerary_text)
 
     except Exception as e:
