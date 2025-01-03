@@ -3,7 +3,6 @@ import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import openai
-client=openAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Initialize FastAPI
 app = FastAPI()
@@ -46,7 +45,7 @@ Create a 3-day itinerary for Disney World Florida, including recommended parks,
 rides suitable for these ages, meal options, and any useful tips.
 """
     try:
-        response = client.Chat.Completions.create(
+        response = openai.Chat.Completions.create(
             model="gpt-4o",
             messages=[
                 {"role": "developer", "content": system_content},
