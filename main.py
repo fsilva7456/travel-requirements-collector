@@ -7,10 +7,8 @@ import openai
 # Initialize FastAPI
 app = FastAPI()
 
-# Set OpenAI API key from environment variable
-openai.api_key = os.getenv("OPENAI_API_KEY")
-if not openai.api_key:
-    raise ValueError("OPENAI_API_KEY environment variable not set!")
+# Initialize OpenAI client
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Pydantic models
 class ItineraryRequest(BaseModel):
@@ -31,8 +29,7 @@ def read_root():
 def generate_itinerary(request: ItineraryRequest):
     # Construct a system + user message approach for ChatCompletion
     system_content = (
-        "You are a helpful Disney World trip planner. "
-        "Provide concise, friendly, and accurate itineraries."
+        "You are a helpful Disney World trip planner. Provide concise, friendly, and accurate itineraries."
     )
     user_content = f"""
 Travel Dates: {request.travel_dates}
@@ -45,7 +42,7 @@ Create a 3-day itinerary for Disney World Florida, including recommended parks,
 rides suitable for these ages, meal options, and any useful tips.
 """
     try:
-        response = openai.Chat.Completions.create(
+        response = client.Chat.Completions.create(
             model="gpt-4o",
             messages=[
                 {"role": "developer", "content": system_content},
