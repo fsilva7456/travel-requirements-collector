@@ -8,7 +8,7 @@ import openai
 app = FastAPI()
 
 # Initialize OpenAI client
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = openai(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Pydantic models
 class ItineraryRequest(BaseModel):
