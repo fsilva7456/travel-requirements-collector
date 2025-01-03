@@ -2,13 +2,13 @@
 import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import openai
+from openai import OpenAI
 
 # Initialize FastAPI
 app = FastAPI()
 
 # Initialize OpenAI client
-client = openai(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Pydantic models
 class ItineraryRequest(BaseModel):
@@ -45,10 +45,10 @@ rides suitable for these ages, meal options, and any useful tips.
         response = client.Chat.Completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "developer", "content": system_content},
+                {"role": "system", "content": system_content},
                 {"role": "user", "content": user_content},
             ],
-            max_tokens=500,
+            max_tokens=2500,
             temperature=0.7,
         )
         # Extract the assistant's reply
