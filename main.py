@@ -12,7 +12,7 @@ app = FastAPI()
 # If you only trust your Vercel domain, replace "*" with the exact domain(s),
 # like "https://disney-frontend.vercel.app" 
 origins = [
-    "https://disney-frontend.vercel.app",
+    "*",
     "http://localhost:3000",  # if you ever do local dev
 ]
 
