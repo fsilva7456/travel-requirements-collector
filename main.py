@@ -1,11 +1,29 @@
 # main.py
 import os
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from openai import OpenAI
 
 # Initialize FastAPI
 app = FastAPI()
+
+# --- 1. Define the allowed origins ---
+# If you only trust your Vercel domain, replace "*" with the exact domain(s),
+# like "https://disney-frontend.vercel.app" 
+origins = [
+    "https://disney-frontend.vercel.app",
+    "http://localhost:3000",  # if you ever do local dev
+]
+
+# --- 2. Add the CORS middleware configuration ---
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,          # or ["*"] to allow all
+    allow_credentials=True,
+    allow_methods=["*"],            # or specify ["GET", "POST", ...]
+    allow_headers=["*"],
+)
 
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
