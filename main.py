@@ -42,7 +42,7 @@ Create a 3-day itinerary for Disney World Florida, including recommended parks,
 rides suitable for these ages, meal options, and any useful tips.
 """
     try:
-        response = client.Chat.Completions.create(
+        response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": system_content},
